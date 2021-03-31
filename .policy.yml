@@ -1,0 +1,32 @@
+# the high level policy
+policy:
+  approval:
+    - or:
+        - update of dependencies
+        - change by a member of the organization
+        - change by a foreigner
+
+# the list of rules
+approval_rules:
+  - name: update of dependencies
+    if:
+      only_has_contributors_in:
+        users: ["scala-steward"]
+      only_changed_files:
+        paths:
+          - "project/Versions.scala"
+          - "project/project/PluginVersions.scala"
+          - "project/build.properties"
+          - ".scalafmt.conf"
+    requires:
+      count: 0
+  - name: change by a member of the organization
+    if:
+      only_has_contributors_in:
+        organizations: ["cbs"]
+    requires:
+      count: 0
+  - name: change by a foreigner
+    requires:
+      count: 1
+      write_collaborators: true

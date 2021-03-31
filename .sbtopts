@@ -1,0 +1,3 @@
+-Dsbt.repository.config=project/repositories
+-Dsbt.override.build.repos=true
+-J-Xmx2g

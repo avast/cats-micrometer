@@ -1,0 +1,25 @@
+version: 1
+merge:
+  required_statuses:
+    - "Build (idp-reputation) - merge"
+    - "policy-bot: master"
+  whitelist:
+    labels: ["bulldozer-merge"]
+    pr_body_substrings:
+      - "labels: library-update, semver-minor"
+      - "labels: library-update, semver-patch"
+      - "labels: sbt-plugin-update"
+      - "labels: scalafix-rule-update"
+      - "labels: test-library-update"
+  blacklist:
+    labels: ["bulldozer-do-not-merge"]
+  method: squash
+  options:
+    squash:
+      body: "pull_request_body"
+  delete_after_merge: true
+update:
+  whitelist:
+    labels: ["bulldozer-update"]
+  blacklist:
+    labels: ["bulldozer-do-not-update"]
