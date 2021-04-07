@@ -6,9 +6,18 @@ lazy val settingsCommon = avastPureBundleAggregatedSettings ++ List(
 
 lazy val root = project
   .in(file("."))
+  .aggregate(api)
   .settings(
     name := "cats-micrometer",
     publish / skip := true
+  )
+
+lazy val api = project
+  .in(file("api"))
+  .settings(settingsCommon)
+  .settings(
+    name := "cats-micrometer-api",
+    libraryDependencies ++= Seq(Dependencies.micrometerCore)
   )
 
 addCommandAlias("lint", "; scalafmtSbtCheck; scalafmtCheckAll")
