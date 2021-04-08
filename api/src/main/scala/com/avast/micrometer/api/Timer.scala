@@ -1,4 +1,4 @@
-package com.avast.cbs.micrometer
+package com.avast.micrometer.api
 
 import java.time.{Duration => JavaDuration}
 import java.util.concurrent.TimeUnit
@@ -9,9 +9,9 @@ trait Timer[F[_]] {
 
   def record(duration: Duration): F[Unit]
 
-  def wrap[A](block: => A): F[A]
+  def timed[A](block: => A): F[A]
 
-  def wrap[A](f: F[A]): F[A]
+  def timed[A](f: F[A]): F[A]
 
   def count: F[Double]
 

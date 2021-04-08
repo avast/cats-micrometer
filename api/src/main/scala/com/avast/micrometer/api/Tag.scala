@@ -1,4 +1,4 @@
-package com.avast.cbs.micrometer
+package com.avast.micrometer.api
 
 final case class Tag(key: String, value: String)
 

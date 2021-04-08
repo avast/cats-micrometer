@@ -1,4 +1,4 @@
-package com.avast.cbs.micrometer
+package com.avast.micrometer.api
 
 trait ToDouble[-A] {
   def toDouble(value: A): Double
