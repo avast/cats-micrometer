@@ -7,6 +7,7 @@ lazy val settingsCommon = avastPureBundleAggregatedSettings ++ List(
 lazy val root = project
   .in(file("."))
   .aggregate(api, core)
+  .settings(settingsCommon)
   .settings(
     name := "cats-micrometer",
     publish / skip := true
