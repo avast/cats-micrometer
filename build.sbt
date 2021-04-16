@@ -1,7 +1,8 @@
 lazy val settingsCommon = avastPureBundleAggregatedSettings ++ List(
   organization := "com.avast.cbs",
   scalaVersion := avastScala213Version,
-  ThisBuild / version := sys.props.get("avast.version").getOrElse(version.value)
+  ThisBuild / version := sys.props.get("avast.version").getOrElse(version.value),
+  missinglinkExcludedDependencies += moduleFilter(name = "micrometer-core")
 )
 
 lazy val root = project
@@ -27,8 +28,9 @@ lazy val core = project
   .settings(
     name := "cats-micrometer-core",
     libraryDependencies ++= Seq(
+      Dependencies.catsEffect,
       Dependencies.micrometerCore,
-      Dependencies.catsEffect
+      Dependencies.scalaTest % Test
     )
   )
   .dependsOn(api)

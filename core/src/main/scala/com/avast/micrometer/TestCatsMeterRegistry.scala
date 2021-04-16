@@ -45,6 +45,10 @@ class TestCatsMeterRegistry[F[_]: Effect](clock: Clock = Clock.SYSTEM)
     )
   }
 
+  def getGaugeValue(name: String, tags: Tag*): Double = {
+    // here it ignores the fact the gauge doesn't exist... but that's what all other methods do in fact ;-)
+    Option(underlying.find(name).tags(tags.asJavaTags).gauge()).map(_.value()).getOrElse(0)
+  }
 }
 
 final case class TimerStats(count: Long, totalTime: Duration)
