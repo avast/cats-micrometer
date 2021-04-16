@@ -1,4 +1,4 @@
-package com.avast.cbs.micrometer
+package com.avast.micrometer.api
 
 import io.micrometer.core.instrument.{MeterRegistry => JavaMeterRegistry}
 
@@ -20,7 +20,7 @@ trait CatsMeterRegistry[F[_]] {
 
   def gauge[A: ToDouble](name: String, tags: Iterable[Tag])(retrieveValue: F[A]): Gauge[F]
 
-  def gauge[A: ToDouble](name: String)(retrieveValue: F[A]): Gauge[F]
+  def gauge[A: ToDouble](name: String, tags: Tag*)(retrieveValue: F[A]): Gauge[F]
 
   def gaugeCollectionSize[A <: Iterable[_]](name: String, tags: Iterable[Tag], collection: A): Gauge[F]
 

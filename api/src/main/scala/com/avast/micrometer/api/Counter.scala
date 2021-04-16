@@ -1,4 +1,4 @@
-package com.avast.cbs.micrometer
+package com.avast.micrometer.api
 
 trait Counter[F[_]] {
   def increment: F[Unit]

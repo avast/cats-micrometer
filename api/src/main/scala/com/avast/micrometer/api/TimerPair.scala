@@ -1,13 +1,10 @@
-package com.avast.cbs.micrometer
+package com.avast.micrometer.api
 
 import java.time.{Duration => JavaDuration}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 
 trait TimerPair[F[_]] {
-  def successes: Timer[F]
-  def failures: Timer[F]
-
   def recordSuccess(duration: JavaDuration): F[Unit]
   def recordSuccess(duration: Duration): F[Unit]
   def recordFailure(duration: JavaDuration): F[Unit]
