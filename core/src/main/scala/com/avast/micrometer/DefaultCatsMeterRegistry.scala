@@ -19,15 +19,11 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
 
   private val clock: F[Long] = F.delay(delegate.config().clock().monotonicTime())
 
-  override def counter(name: String, tags: Iterable[Tag]): Counter[F] = {
+  override def counter(name: String, tags: Tag*): Counter[F] = {
     new DefaultCounter(delegate.counter(name, tags.asJavaTags))
   }
 
-  override def counter(name: String, tags: Tag*): Counter[F] = {
-    counter(name, tags)
-  }
-
-  override def gauge[A: ToDouble](name: String, tags: Iterable[Tag])(retrieveValue: F[A]): Gauge[F] = {
+  override def gauge[A: ToDouble](name: String, tags: Tag*)(retrieveValue: F[A]): Gauge[F] = {
     val conv: ToDouble[A] = implicitly
     val value: IO[A] = blocker.blockOn(F.toIO(retrieveValue))
 
@@ -43,41 +39,26 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     )
   }
 
-  override def gauge[A: ToDouble](name: String, tags: Tag*)(retrieveValue: F[A]): Gauge[F] = {
-    gauge(name, tags)(retrieveValue)
-  }
-
-  override def gaugeCollectionSize[A <: Iterable[_]](name: String, tags: Iterable[Tag], collection: A): Gauge[F] = {
-    gauge(name, tags)(F.pure(collection))(CollectionSizeToDouble)
-  }
-
-  override def timer(name: String, tags: Iterable[Tag]): Timer[F] = {
-    new DefaultTimer(delegate.timer(name, tags.asJavaTags), clock)
+  override def gaugeCollectionSize[A <: Iterable[_]](name: String, tags: Tag*)(collection: A): Gauge[F] = {
+    gauge(name, tags: _*)(F.pure(collection))(CollectionSizeToDouble)
   }
 
   override def timer(name: String, tags: Tag*): Timer[F] = {
-    timer(name, tags)
+    new DefaultTimer(delegate.timer(name, tags.asJavaTags), clock)
   }
 
-  override def timerPair(name: String, tags: Iterable[Tag]): TimerPair[F] = {
+  override def timerPair(name: String, tags: Tag*): TimerPair[F] = {
     new DefaultTimerPair(
-      timer(name, Seq(Tag("type", "success")) ++ tags),
-      timer(name, Seq(Tag("type", "failure")) ++ tags),
+      timer(name, Seq(Tag("type", "success")) ++ tags: _*),
+      timer(name, Seq(Tag("type", "failure")) ++ tags: _*),
       clock
     )
   }
 
-  override def timerPair(name: String, tags: Tag*): TimerPair[F] = {
-    timerPair(name, tags)
-  }
-
-  override def summary(name: String, tags: Iterable[Tag]): DistributionSummary[F] = {
+  override def summary(name: String, tags: Tag*): DistributionSummary[F] = {
     new DefaultDistributionSummary[F](delegate.summary(name, tags.asJavaTags))
   }
 
-  override def summary(name: String, tags: Tag*): DistributionSummary[F] = {
-    summary(name, tags)
-  }
 }
 
 private object DefaultCatsMeterRegistry {
