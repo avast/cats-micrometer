@@ -101,7 +101,7 @@ class TestCatsMeterRegistryTest extends AnyFlatSpec with Matchers {
 
     val mutableCollection = new ArrayBuffer[Int]()
 
-    registry.gaugeCollectionSize("gaugeName", Seq(Tag("key", "value")), mutableCollection)
+    registry.gaugeCollectionSize("gaugeName", Tag("key", "value"))(mutableCollection)
     registry.getGaugeValue("gaugeName", Tag("key", "value")) shouldBe 0
 
     mutableCollection += 1
