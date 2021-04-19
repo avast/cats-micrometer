@@ -4,17 +4,16 @@ import com.avast.micrometer.api.Tag
 import io.micrometer.core.instrument.{Tag => JavaTag}
 
 import java.lang.{Iterable => JavaIterable}
+import java.util
 import scala.jdk.CollectionConverters._
 
 private[micrometer] object MicrometerJavaConverters {
   implicit class ScalaTagsConverter(private val tags: Iterable[Tag]) extends AnyVal {
     def asJavaTags: JavaIterable[JavaTag] = {
-      tags.map { t =>
-        new JavaTag {
-          override def getKey: String = t.key
-          override def getValue: String = t.value
-        }
-      }.asJava
+      // The explicit conversion to `util.ArrayList` is needed - otherwise Java has some difficulties with comparison
+      new util.ArrayList(tags.map { t =>
+        JavaTag.of(t.key, t.value)
+      }.asJavaCollection)
     }
   }
 
