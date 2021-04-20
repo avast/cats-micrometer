@@ -27,10 +27,8 @@ This library is a wrapper of standard Micrometer `MeterRegistry` - so it's up to
 [SST](https://avast.github.io/scala-server-toolkit/subprojects/micrometer) but any other way is fine (see e.g. [official way](https://micrometer.io/docs/registry/statsD)).
 
 ```scala
-package com.avast.micrometer
-
 import cats.effect.{Blocker, ExitCode, IO, IOApp}
-import cats.syntax.flatMap._
+import com.avast.micrometer.CatsMicrometer
 import com.avast.micrometer.api.{CatsMeterRegistry, Tag}
 import io.micrometer.core.instrument.MeterRegistry
 
@@ -38,7 +36,7 @@ object Readme extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     Blocker[IO].use { blocker =>
       val meterRegistry: MeterRegistry = ??? // TODO create registry
-      val catsMeterRegistry: CatsMeterRegistry[IO] = CatsMeterRegistry.wrap(meterRegistry, blocker)
+      val catsMeterRegistry: CatsMeterRegistry[IO] = CatsMicrometer.wrapRegistry(meterRegistry, blocker)
 
       val counter = catsMeterRegistry.counter("theCounter", Tag("fruitType", "apples"))
       val timer = catsMeterRegistry.timer("theTimer", Tag("type", "requests"), Tag("service", "Filerep"))
