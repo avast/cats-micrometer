@@ -9,7 +9,7 @@ import java.time.{Duration => JavaDuration}
 import java.util.concurrent.{Callable, TimeUnit}
 import scala.concurrent.duration.Duration
 
-private[micrometer] class DefaultTimer[F[_]: Sync](delegate: Delegate, clock: F[Long]) extends Timer[F] {
+private[micrometer] class DefaultTimer[F[_]: Sync] private (delegate: Delegate, clock: F[Long]) extends Timer[F] {
 
   private val F = Sync[F]
 
@@ -37,4 +37,13 @@ private[micrometer] class DefaultTimer[F[_]: Sync](delegate: Delegate, clock: F[
 
   override def totalTime(unit: TimeUnit): F[Double] = F.delay(delegate.totalTime(unit))
 
+}
+
+private object DefaultTimer {
+  def createAndInit[F[_]: Sync](delegate: Delegate, clock: F[Long], initStrategy: InitStrategy): DefaultTimer[F] = {
+    initStrategy.init {
+      delegate.record(0, TimeUnit.NANOSECONDS)
+    }
+    new DefaultTimer(delegate, clock)
+  }
 }

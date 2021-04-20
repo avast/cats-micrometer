@@ -8,7 +8,8 @@ import io.micrometer.core.instrument.{Counter => _, Gauge => JavaGauge, MeterReg
 
 private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     delegate: JavaMeterRegistry,
-    blocker: Blocker
+    blocker: Blocker,
+    initStrategy: InitStrategy
 ) extends CatsMeterRegistry[F] {
 
   override def underlying: JavaMeterRegistry = delegate
@@ -20,7 +21,7 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
   private val clock: F[Long] = F.delay(delegate.config().clock().monotonicTime())
 
   override def counter(name: String, tags: Tag*): Counter[F] = {
-    new DefaultCounter(delegate.counter(name, tags.asJavaTags))
+    DefaultCounter.createAndInit(delegate.counter(name, tags.asJavaTags), initStrategy)
   }
 
   override def gauge[A: ToDouble](name: String, tags: Tag*)(retrieveValue: F[A]): Gauge[F] = {
@@ -44,7 +45,7 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
   }
 
   override def timer(name: String, tags: Tag*): Timer[F] = {
-    new DefaultTimer(delegate.timer(name, tags.asJavaTags), clock)
+    DefaultTimer.createAndInit(delegate.timer(name, tags.asJavaTags), clock, initStrategy)
   }
 
   override def timerPair(name: String, tags: Tag*): TimerPair[F] = {
@@ -56,7 +57,7 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
   }
 
   override def summary(name: String, tags: Tag*): DistributionSummary[F] = {
-    new DefaultDistributionSummary[F](delegate.summary(name, tags.asJavaTags))
+    DefaultDistributionSummary.createAndInit(delegate.summary(name, tags.asJavaTags), initStrategy)
   }
 
 }
