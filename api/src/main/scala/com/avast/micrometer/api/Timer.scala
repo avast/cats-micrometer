@@ -9,9 +9,9 @@ trait Timer[F[_]] {
 
   def record(duration: Duration): F[Unit]
 
-  def timed[A](block: => A): F[A]
+  def wrap[A](block: => A): F[A]
 
-  def timed[A](f: F[A]): F[A]
+  def wrap[A](f: F[A]): F[A]
 
   def count: F[Double]
 

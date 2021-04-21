@@ -19,7 +19,7 @@ private[micrometer] class DefaultTimer[F[_]: Sync] private (delegate: Delegate, 
     F.delay(delegate.record(duration.toNanos, TimeUnit.NANOSECONDS))
   }
 
-  override def timed[A](block: => A): F[A] = {
+  override def wrap[A](block: => A): F[A] = {
     F.delay {
       delegate
         .wrap(new Callable[A] {
@@ -29,7 +29,7 @@ private[micrometer] class DefaultTimer[F[_]: Sync] private (delegate: Delegate, 
     }
   }
 
-  override def timed[A](f: F[A]): F[A] = {
+  override def wrap[A](f: F[A]): F[A] = {
     Bracket[F, Throwable].bracket(clock)(_ => f)(start => clock.map(end => delegate.record(end - start, TimeUnit.NANOSECONDS)))
   }
 
