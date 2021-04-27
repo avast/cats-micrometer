@@ -6,6 +6,8 @@ trait CatsMeterRegistry[F[_]] {
 
   def underlying: JavaMeterRegistry
 
+  def initIfConfigured(): F[Unit]
+
   def counter(name: String, tags: Tag*): Counter[F]
 
   def timer(name: String, tags: Tag*): Timer[F]

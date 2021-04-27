@@ -7,9 +7,8 @@ import io.micrometer.core.instrument.{MeterRegistry => JavaMeterRegistry}
 object CatsMicrometer {
   def wrapRegistry[F[_]: Effect](
       registry: JavaMeterRegistry,
-      blocker: Blocker,
-      initStrategy: InitStrategy = InitStrategy.fromEnv()
+      blocker: Blocker
   ): CatsMeterRegistry[F] = {
-    new DefaultCatsMeterRegistry(registry, blocker, initStrategy)
+    new DefaultCatsMeterRegistry(registry, blocker)
   }
 }
