@@ -30,7 +30,8 @@ lazy val core = project
     libraryDependencies ++= Seq(
       Dependencies.catsEffect,
       Dependencies.micrometerCore,
-      Dependencies.scalaTest % Test
+      Dependencies.scalaTest % Test,
+      Dependencies.slf4j
     )
   )
   .dependsOn(api)

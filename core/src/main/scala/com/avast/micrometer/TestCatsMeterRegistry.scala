@@ -13,8 +13,7 @@ import scala.concurrent.duration._
 class TestCatsMeterRegistry[F[_]: Effect](clock: Clock = Clock.SYSTEM)
     extends DefaultCatsMeterRegistry[F](
       new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock),
-      Blocker.liftExecutionContext(ExecutionContext.global),
-      InitStrategy.NoOp
+      Blocker.liftExecutionContext(ExecutionContext.global)
     ) {
 
   def getCounterCount(name: String, tags: Tag*): Double = {
