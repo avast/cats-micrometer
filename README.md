@@ -1,7 +1,6 @@
 # Cats Micrometer
 
-Latest
-version: [see TC](https://teamcity.ida.avast.com/buildConfiguration/ThreatLabs_CustomerBackendSystems_cats_micrometer_Publish?branch=%3Cdefault%3E&buildTypeTab=overview&mode=builds)
+Latest version: [see TC](https://teamcity.ida.avast.com/buildConfiguration/ThreatLabs_CustomerBackendSystems_cats_micrometer_Publish?branch=%3Cdefault%3E&buildTypeTab=overview&mode=builds)
 
 This project is an FP wrapper over Micrometer library, adjusted to the needs of CBS team but available to anyone.  
 It's currently released only for Scala 2.13.
@@ -161,3 +160,20 @@ Few things worth explicit mentioning:
 - `namingConvention = Some(NamingConvention.dot)` - without it, a camelCase conversion is applied to the metrics - you don't want that
 - `prefix = "app_name."` - as [described on CML](https://cml.avast.com/pages/viewpage.action?pageId=19797802), mind the dot at the end!
 
+## Avast Metrics interoperability
+
+There exists a module for easy cooperation with some legacy libraries which use [`Avast Metrics`](https://github.com/avast/metrics/).
+
+```scala
+libraryDependencies += "com.avast.cbs" %% "cats-micrometer-avast-metrics" % "latestVersion"
+```
+
+Simply use:
+
+```scala
+import com.avast.micrometer.avastMetrics._
+
+val cr: CatsMeterRegistry[IO] = ???
+
+val monitor = cr.asMetricsScalaMonitor // com.avast.metrics.scalaapi.Monitor
+```

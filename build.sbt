@@ -7,7 +7,7 @@ lazy val settingsCommon = avastPureBundleAggregatedSettings ++ List(
 
 lazy val root = project
   .in(file("."))
-  .aggregate(api, core)
+  .aggregate(api, core, avastMetrics)
   .settings(settingsCommon)
   .settings(
     name := "cats-micrometer",
@@ -35,3 +35,17 @@ lazy val core = project
     )
   )
   .dependsOn(api)
+
+lazy val avastMetrics = project
+  .in(file("avast-metrics"))
+  .settings(settingsCommon)
+  .settings(
+    name := "cats-micrometer-avast-metrics",
+    libraryDependencies ++= Seq(
+      Dependencies.avastMetricsCore,
+      Dependencies.avastMetricsScala,
+      Dependencies.micrometerStatsd % Test,
+      Dependencies.scalaTest % Test
+    )
+  )
+  .dependsOn(core)
