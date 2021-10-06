@@ -34,7 +34,7 @@ private[micrometer] class DefaultTimerPair[F[_]: Sync](successes: Timer[F], fail
         }
       } catch {
         case NonFatal(e) =>
-          clock.flatTap(end => successes.record((end - start).nanos)) *>
+          clock.flatTap(end => failures.record((end - start).nanos)) *>
             F.raiseError(e)
       }
     }
