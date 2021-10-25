@@ -4,7 +4,7 @@ import cats.effect.{Blocker, ContextShift, Effect, IO}
 import com.avast.micrometer.DefaultCatsMeterRegistry.{CollectionSizeToDouble, InitPropertyName}
 import com.avast.micrometer.MicrometerJavaConverters._
 import com.avast.micrometer.api._
-import io.micrometer.core.instrument.{Counter => _, Gauge => JavaGauge, MeterRegistry => JavaMeterRegistry, Tag => _, Timer => _}
+import io.micrometer.core.instrument.{Counter => _, Gauge => JavaGauge, MeterRegistry => JavaMeterRegistry, Tag => _, Timer => JavaTimer}
 import org.slf4j.LoggerFactory
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
@@ -49,7 +49,14 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
   }
 
   override def timer(name: String, tags: Tag*): Timer[F] = {
-    new DefaultTimer(delegate.timer(name, tags.asJavaTags), clock)
+    new DefaultTimer(
+      JavaTimer
+        .builder(name)
+        .tags(tags.asJavaTags)
+        .publishPercentileHistogram()
+        .register(delegate),
+      clock
+    )
   }
 
   override def timerPair(name: String, tags: Tag*): TimerPair[F] = {
