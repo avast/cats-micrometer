@@ -5,6 +5,7 @@ import com.avast.micrometer.api.Tag
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.Seq
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration._
 
@@ -77,6 +78,19 @@ class TestCatsMeterRegistryTest extends AnyFlatSpec with Matchers {
     registry.getTimerPairStats("timerPairName", Tag("key", "value")).successes.totalTime shouldBe 84.millis
     registry.getTimerPairStats("timerPairName", Tag("key", "value")).failures.count shouldBe 2
     registry.getTimerPairStats("timerPairName", Tag("key", "value")).failures.totalTime shouldBe 198.millis
+  }
+
+  it should "timer with custom buckets" in {
+    val registry = new TestCatsMeterRegistry[IO]()
+    val timer = registry.timer("timerName", Seq(100.millis, 200.millis, 400.millis, 800.millis), Tag("key", "value"))
+    timer.record(42.millis).unsafeRunSync()
+    timer.record(500.millis).unsafeRunSync()
+
+    val histogram = registry.getTimerSnapshot("timerName", Tag("key", "value"))
+
+    histogram.count() shouldBe 2
+    histogram.histogramCounts().size shouldBe 4
+    histogram.histogramCounts().map(_.count()).toSeq shouldBe Seq(1, 1, 1, 2)
   }
 
   it should "return summary stats" in {

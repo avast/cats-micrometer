@@ -4,6 +4,7 @@ import cats.effect.{Blocker, Effect}
 import com.avast.micrometer.MicrometerJavaConverters._
 import com.avast.micrometer.api.Tag
 import io.micrometer.core.instrument.Clock
+import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.simple.{SimpleConfig, SimpleMeterRegistry}
 
 import java.util.concurrent.TimeUnit
@@ -23,6 +24,11 @@ class TestCatsMeterRegistry[F[_]: Effect](clock: Clock = Clock.SYSTEM)
   def getTimerStats(name: String, tags: Tag*): TimerStats = {
     val timer = underlying.timer(name, tags.asJavaTags)
     TimerStats(timer.count(), timer.totalTime(TimeUnit.NANOSECONDS).nanos)
+  }
+
+  def getTimerSnapshot(name: String, tags: Tag*): HistogramSnapshot = {
+    val timer = underlying.timer(name, tags.asJavaTags)
+    timer.takeSnapshot()
   }
 
   def getTimerPairStats(name: String, tags: Tag*): TimerPairStats = {

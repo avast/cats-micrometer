@@ -2,6 +2,8 @@ package com.avast.micrometer.api
 
 import io.micrometer.core.instrument.{MeterRegistry => JavaMeterRegistry}
 
+import scala.concurrent.duration.FiniteDuration
+
 trait CatsMeterRegistry[F[_]] {
 
   def underlying: JavaMeterRegistry
@@ -11,6 +13,8 @@ trait CatsMeterRegistry[F[_]] {
   def counter(name: String, tags: Tag*): Counter[F]
 
   def timer(name: String, tags: Tag*): Timer[F]
+
+  def timer(name: String, serviceLevelObjectives: Seq[FiniteDuration], tags: Tag*): Timer[F]
 
   def timerPair(name: String, tags: Tag*): TimerPair[F]
 
