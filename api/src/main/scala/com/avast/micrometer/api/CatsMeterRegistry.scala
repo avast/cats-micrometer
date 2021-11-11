@@ -16,6 +16,8 @@ trait CatsMeterRegistry[F[_]] {
 
   def timer(name: String, serviceLevelObjectives: Seq[FiniteDuration], tags: Tag*): Timer[F]
 
+  def timer(name: String, minimumExpectedValue: FiniteDuration, maximumExpectedValue: FiniteDuration, tags: Tag*): Timer[F]
+
   def timerPair(name: String, tags: Tag*): TimerPair[F]
 
   def gauge[A: ToDouble](name: String, tags: Tag*)(retrieveValue: F[A]): Gauge[F]

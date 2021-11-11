@@ -4,7 +4,7 @@ import cats.effect.{Blocker, ContextShift, Effect, IO}
 import com.avast.micrometer.DefaultCatsMeterRegistry.{CollectionSizeToDouble, InitPropertyName}
 import com.avast.micrometer.MicrometerJavaConverters._
 import com.avast.micrometer.api._
-import io.micrometer.core.instrument.{Gauge => JavaGauge, MeterRegistry => JavaMeterRegistry, Timer => JavaTimer, Counter => _, Tag => _}
+import io.micrometer.core.instrument.{Counter => _, Gauge => JavaGauge, MeterRegistry => JavaMeterRegistry, Tag => _, Timer => JavaTimer}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration._
@@ -68,6 +68,19 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
         .tags(tags.asJavaTags)
         .publishPercentileHistogram()
         .serviceLevelObjectives(serviceLevelObjectives.map(_.toJava): _*)
+        .register(delegate),
+      clock
+    )
+  }
+
+  def timer(name: String, minimumExpectedValue: FiniteDuration, maximumExpectedValue: FiniteDuration, tags: Tag*): Timer[F] = {
+    new DefaultTimer(
+      JavaTimer
+        .builder(name)
+        .tags(tags.asJavaTags)
+        .publishPercentileHistogram()
+        .minimumExpectedValue(minimumExpectedValue.toJava)
+        .maximumExpectedValue(maximumExpectedValue.toJava)
         .register(delegate),
       clock
     )
