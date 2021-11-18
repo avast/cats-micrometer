@@ -7,7 +7,9 @@ import com.avast.micrometer.api._
 import io.micrometer.core.instrument.{Counter => _, Gauge => JavaGauge, MeterRegistry => JavaMeterRegistry, Tag => _, Timer => JavaTimer}
 import org.slf4j.LoggerFactory
 
+import scala.concurrent.duration._
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.jdk.DurationConverters._
 
 private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     delegate: JavaMeterRegistry,
@@ -54,6 +56,31 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
         .builder(name)
         .tags(tags.asJavaTags)
         .publishPercentileHistogram()
+        .register(delegate),
+      clock
+    )
+  }
+
+  override def timer(name: String, serviceLevelObjectives: Seq[FiniteDuration], tags: Tag*): Timer[F] = {
+    new DefaultTimer(
+      JavaTimer
+        .builder(name)
+        .tags(tags.asJavaTags)
+        .publishPercentileHistogram()
+        .serviceLevelObjectives(serviceLevelObjectives.map(_.toJava): _*)
+        .register(delegate),
+      clock
+    )
+  }
+
+  override def timer(name: String, minimumExpectedValue: FiniteDuration, maximumExpectedValue: FiniteDuration, tags: Tag*): Timer[F] = {
+    new DefaultTimer(
+      JavaTimer
+        .builder(name)
+        .tags(tags.asJavaTags)
+        .publishPercentileHistogram()
+        .minimumExpectedValue(minimumExpectedValue.toJava)
+        .maximumExpectedValue(maximumExpectedValue.toJava)
         .register(delegate),
       clock
     )
