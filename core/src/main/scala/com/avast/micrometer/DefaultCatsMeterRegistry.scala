@@ -73,7 +73,7 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     )
   }
 
-  def timer(name: String, minimumExpectedValue: FiniteDuration, maximumExpectedValue: FiniteDuration, tags: Tag*): Timer[F] = {
+  override def timer(name: String, minimumExpectedValue: FiniteDuration, maximumExpectedValue: FiniteDuration, tags: Tag*): Timer[F] = {
     new DefaultTimer(
       JavaTimer
         .builder(name)
