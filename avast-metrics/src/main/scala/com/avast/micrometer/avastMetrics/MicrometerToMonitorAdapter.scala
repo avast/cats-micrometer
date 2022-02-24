@@ -60,6 +60,11 @@ class MicrometerToMonitorAdapter(val meterRegistry: MeterRegistry, prefixNames: 
     override def start(): Timer.TimeContext = new Timer.TimeContext {
       private val start = clock.monotonicTime()
       override def stop(): Unit = underlying.record(Duration.ofNanos(clock.monotonicTime() - start))
+      override def stopAndGetTime(): Long = {
+        val duration = Duration.ofNanos(clock.monotonicTime() - start)
+        underlying.record(duration)
+        duration.toNanos
+      }
     }
 
     override def update(duration: Duration): Unit = underlying.record(duration)
