@@ -1,7 +1,7 @@
 version: 1
 merge:
   required_statuses:
-    - "Build (idp-reputation) - merge"
+    - "Build (cats-micrometer) - merge"
     - "policy-bot: master"
   whitelist:
     labels: ["bulldozer-merge"]
