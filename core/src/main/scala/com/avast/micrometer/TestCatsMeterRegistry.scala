@@ -1,6 +1,6 @@
 package com.avast.micrometer
 
-import cats.effect.{Blocker, Effect}
+import cats.effect.Effect
 import com.avast.micrometer.MicrometerJavaConverters._
 import com.avast.micrometer.api.Tag
 import io.micrometer.core.instrument.Clock

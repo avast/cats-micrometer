@@ -1,6 +1,6 @@
 package com.avast.micrometer
 
-import cats.effect.{Blocker, ContextShift, Effect, IO}
+import cats.effect.{Effect, IO}
 import com.avast.micrometer.DefaultCatsMeterRegistry.{CollectionSizeToDouble, InitPropertyName}
 import com.avast.micrometer.MicrometerJavaConverters._
 import com.avast.micrometer.api._

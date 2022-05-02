@@ -1,6 +1,6 @@
 package com.avast.micrometer
 
-import cats.effect.{Bracket, ExitCase, Sync}
+import cats.effect.{ExitCase, Sync}
 import cats.syntax.all._
 import com.avast.micrometer.api.{Timer, TimerPair}
 
@@ -8,6 +8,7 @@ import java.time.{Duration => JavaDuration}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
+import cats.effect.MonadCancel
 
 private[micrometer] class DefaultTimerPair[F[_]: Sync](successes: Timer[F], failures: Timer[F], clock: F[Long]) extends TimerPair[F] {
 
@@ -41,7 +42,7 @@ private[micrometer] class DefaultTimerPair[F[_]: Sync](successes: Timer[F], fail
   }
 
   override def wrap[A](f: F[A]): F[A] = {
-    Bracket[F, Throwable].bracketCase(clock)(_ => f) {
+    MonadCancel[F, Throwable].bracketCase(clock)(_ => f) {
       case (start, ExitCase.Completed) => clock.flatMap(end => successes.record((end - start).nanos))
       case (start, ExitCase.Error(_))  => clock.flatMap(end => failures.record((end - start).nanos))
       case _                           => F.unit
