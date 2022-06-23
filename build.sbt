@@ -43,7 +43,7 @@ lazy val avastMetrics = project
     name := "cats-micrometer-avast-metrics",
     libraryDependencies ++= Seq(
       Dependencies.avastMetricsCore,
-      Dependencies.avastMetricsScala,
+      Dependencies.avastMetricsCatsEffect,
       Dependencies.micrometerStatsd % Test,
       Dependencies.scalaTest % Test
     )
