@@ -1,3 +1,3 @@
 object PluginVersions {
-  val sbtAvast = "3.2.259"
+  val sbtAvast = "3.2.263"
 }
