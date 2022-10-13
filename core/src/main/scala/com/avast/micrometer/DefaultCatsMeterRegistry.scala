@@ -4,7 +4,15 @@ import cats.effect.{Blocker, ContextShift, Effect, IO}
 import com.avast.micrometer.DefaultCatsMeterRegistry.{CollectionSizeToDouble, InitPropertyName}
 import com.avast.micrometer.MicrometerJavaConverters._
 import com.avast.micrometer.api._
-import io.micrometer.core.instrument.{Counter => _, Gauge => JavaGauge, MeterRegistry => JavaMeterRegistry, Tag => _, Timer => JavaTimer}
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
+import io.micrometer.core.instrument.{
+  Counter => _,
+  DistributionSummary => JavaSummary,
+  Gauge => JavaGauge,
+  MeterRegistry => JavaMeterRegistry,
+  Tag => _,
+  Timer => JavaTimer
+}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration._
@@ -98,6 +106,30 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     new DefaultDistributionSummary(delegate.summary(name, tags.asJavaTags))
   }
 
+  override def summary(
+      name: String,
+      distributionCongfig: DistributionStatisticConfig,
+      scale: Double,
+      tags: Tag*
+  ): DistributionSummary[F] = {
+    val conf = distributionCongfig.merge(DistributionStatisticConfig.DEFAULT)
+
+    new DefaultDistributionSummary(
+      JavaSummary
+        .builder(name)
+        .tags(tags.asJavaTags)
+        .minimumExpectedValue(conf.getMinimumExpectedValueAsDouble)
+        .maximumExpectedValue(conf.getMaximumExpectedValueAsDouble)
+        .percentilePrecision(conf.getPercentilePrecision)
+        .publishPercentiles(conf.getPercentiles: _*)
+        .publishPercentileHistogram(conf.isPublishingHistogram)
+        .distributionStatisticBufferLength(conf.getBufferLength)
+        .distributionStatisticExpiry(conf.getExpiry)
+        .scale(scale)
+        .register(underlying)
+    )
+  }
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def initIfConfigured(): F[Unit] = {
     if (System.getenv(InitPropertyName) == "true") {
@@ -120,7 +152,6 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
       }
     } else F.unit
   }
-
 }
 
 private object DefaultCatsMeterRegistry {

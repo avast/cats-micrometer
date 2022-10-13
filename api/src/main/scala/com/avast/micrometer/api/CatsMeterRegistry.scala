@@ -1,5 +1,6 @@
 package com.avast.micrometer.api
 
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.{MeterRegistry => JavaMeterRegistry}
 
 import scala.concurrent.duration.FiniteDuration
@@ -27,4 +28,5 @@ trait CatsMeterRegistry[F[_]] {
   /** This is a histogram. */
   def summary(name: String, tags: Tag*): DistributionSummary[F]
 
+  def summary(name: String, summaryConfig: DistributionStatisticConfig, scale: Double, tags: Tag*): DistributionSummary[F]
 }
