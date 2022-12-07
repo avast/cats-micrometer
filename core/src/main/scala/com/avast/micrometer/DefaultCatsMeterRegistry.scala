@@ -102,6 +102,27 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     )
   }
 
+  override def timerPair(
+      name: String,
+      minimumExpectedValue: FiniteDuration,
+      maximumExpectedValue: FiniteDuration,
+      tags: Tag*
+  ): TimerPair[F] = {
+    new DefaultTimerPair(
+      timer(name, minimumExpectedValue, maximumExpectedValue, Seq(Tag("type", "success")) ++ tags: _*),
+      timer(name, minimumExpectedValue, maximumExpectedValue, Seq(Tag("type", "failure")) ++ tags: _*),
+      clock
+    )
+  }
+
+  override def timerPair(name: String, serviceLevelObjectives: Seq[FiniteDuration], tags: Tag*): TimerPair[F] = {
+    new DefaultTimerPair(
+      timer(name, serviceLevelObjectives, Seq(Tag("type", "success")) ++ tags: _*),
+      timer(name, serviceLevelObjectives, Seq(Tag("type", "failure")) ++ tags: _*),
+      clock
+    )
+  }
+
   override def summary(name: String, tags: Tag*): DistributionSummary[F] = {
     new DefaultDistributionSummary(delegate.summary(name, tags.asJavaTags))
   }
