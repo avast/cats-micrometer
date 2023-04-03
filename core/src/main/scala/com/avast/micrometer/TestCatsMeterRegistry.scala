@@ -4,7 +4,7 @@ import cats.effect.{Blocker, Effect}
 import com.avast.micrometer.MicrometerJavaConverters._
 import com.avast.micrometer.api.Tag
 import io.micrometer.core.instrument.Clock
-import io.micrometer.core.instrument.distribution.HistogramSnapshot
+import io.micrometer.core.instrument.distribution.{DistributionStatisticConfig, HistogramSnapshot}
 import io.micrometer.core.instrument.simple.{SimpleConfig, SimpleMeterRegistry}
 
 import java.util.concurrent.TimeUnit
@@ -49,6 +49,13 @@ class TestCatsMeterRegistry[F[_]: Effect](clock: Clock = Clock.SYSTEM)
       total = summ.totalAmount(),
       max = summ.max()
     )
+  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf()"))
+  def getHistogramSnapshot(name: String, distributionConfig: DistributionStatisticConfig, scale: Double, tags: Tag*): HistogramSnapshot = {
+    val summ: DefaultDistributionSummary[F] =
+      this.summary(name, distributionConfig, scale, tags: _*).asInstanceOf[DefaultDistributionSummary[F]]
+    summ.underlying.takeSnapshot()
   }
 
   def getGaugeValue(name: String, tags: Tag*): Double = {

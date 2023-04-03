@@ -2,10 +2,10 @@ package com.avast.micrometer
 
 import cats.effect.IO
 import com.avast.micrometer.api.Tag
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.Seq
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration._
 
@@ -107,6 +107,51 @@ class TestCatsMeterRegistryTest extends AnyFlatSpec with Matchers {
     io.unsafeRunSync()
     registry.getSummaryStats("summaryName", Tag("key", "value")).count shouldBe 2
     registry.getSummaryStats("summaryName", Tag("key", "value")).total shouldBe 85.8
+  }
+
+  it should "return summary stats and histogram" in {
+    val registry = new TestCatsMeterRegistry[IO]()
+    val name = "histogramSummary"
+    val percentiles = Array(0.5, 0.75, 1d)
+    val expectedValues = Map(0.5 -> 42.9, 0.75 -> 52.9, 1d -> 62.9)
+    val digitsOfPrecision = 3
+    val scale = 1d
+
+    val config = DistributionStatisticConfig
+      .builder()
+      .percentiles(percentiles: _*)
+      .percentilePrecision(digitsOfPrecision)
+      .percentilesHistogram(true)
+      .build()
+
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).count shouldBe 0
+
+    val io = registry.summary(name, config, scale, Tag("key", "value")).record(42.9)
+    val io2 = registry.summary(name, config, scale, Tag("key", "value")).record(52.9)
+    val io3 = registry.summary(name, config, scale, Tag("key", "value")).record(62.9)
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).count shouldBe 0
+
+    io.unsafeRunSync()
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).count shouldBe 1
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).total shouldBe 42.9
+
+    io.unsafeRunSync()
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).count shouldBe 2
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).total shouldBe 85.8
+
+    io2.unsafeRunSync()
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).count shouldBe 3
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).total shouldBe 138.7
+
+    io3.unsafeRunSync()
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).count shouldBe 4
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).total shouldBe 201.6
+
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).percentileValues().map(_.percentile) shouldBe percentiles
+    registry.getHistogramSnapshot(name, config, scale, Tag("key", "value")).percentileValues().foreach { tuple =>
+      expectedValues(tuple.percentile()) - 0.1 < tuple.value() &&
+      expectedValues(tuple.percentile()) + 0.1 > tuple.value()
+    }
   }
 
   it should "return gauge value" in {

@@ -8,6 +8,8 @@ private[micrometer] class DefaultDistributionSummary[F[_]: Sync](delegate: Deleg
 
   private val F = Sync[F]
 
+  private[micrometer] def underlying: Delegate = delegate
+
   override def record(value: Double): F[Unit] = {
     F.delay(delegate.record(value))
   }
