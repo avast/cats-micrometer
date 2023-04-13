@@ -59,3 +59,9 @@ lazy val avastMetrics = project
     )
   )
   .dependsOn(core)
+
+addCommandAlias(
+  "checkAll", "scalafmtSbtCheck; scalafmtCheckAll; +test"
+)
+
+addCommandAlias("fixAll", "; scalafmtSbt; scalafmtAll")
