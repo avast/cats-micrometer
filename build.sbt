@@ -1,8 +1,18 @@
-lazy val settingsCommon = avastPureBundleAggregatedSettings ++ List(
-  organization := "com.avast.cbs",
-  scalaVersion := avastScala213Version,
-  ThisBuild / version := sys.props.get("avast.version").getOrElse(version.value),
-  missinglinkExcludedDependencies += moduleFilter(name = "micrometer-core")
+import BuildSupport.ScalaVersions._
+
+ThisBuild / versionScheme := Some("early-semver")
+
+ThisBuild / scalacOptions ++=
+  List(
+    // warnings
+    "-Wconf:msg=While parsing annotations in:silent"
+  )
+
+lazy val settingsCommon = List(
+  organization := "com.avast",
+  scalaVersion := scala213,
+  licenses := List("MIT" -> url(s"https://github.com/avast/cats-micrometer/blob/${version.value}/LICENSE")),
+  description := "Library for Micrometer written in Cats-Effect"
 )
 
 lazy val root = project
@@ -19,7 +29,7 @@ lazy val api = project
   .settings(settingsCommon)
   .settings(
     name := "cats-micrometer-api",
-    libraryDependencies ++= Seq(Dependencies.micrometerCore)
+    libraryDependencies ++= Seq(Dependencies.Micrometer.core)
   )
 
 lazy val core = project
@@ -28,10 +38,10 @@ lazy val core = project
   .settings(
     name := "cats-micrometer-core",
     libraryDependencies ++= Seq(
-      Dependencies.catsEffect,
-      Dependencies.micrometerCore,
-      Dependencies.scalaTest % Test,
-      Dependencies.slf4j
+      Dependencies.Avast.metricsCatsEffect,
+      Dependencies.Micrometer.core,
+      Dependencies.Scalatest.scalaTest % Test,
+      Dependencies.Slf4j.api
     )
   )
   .dependsOn(api)
@@ -42,10 +52,10 @@ lazy val avastMetrics = project
   .settings(
     name := "cats-micrometer-avast-metrics",
     libraryDependencies ++= Seq(
-      Dependencies.avastMetricsCore,
-      Dependencies.avastMetricsCatsEffect,
-      Dependencies.micrometerStatsd % Test,
-      Dependencies.scalaTest % Test
+      Dependencies.Avast.metricsCore,
+      Dependencies.Avast.metricsCatsEffect,
+      Dependencies.Micrometer.statsd % Test,
+      Dependencies.Scalatest.scalaTest % Test
     )
   )
   .dependsOn(core)

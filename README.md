@@ -1,9 +1,7 @@
 # Cats Micrometer
 
-Latest version: [see TC](https://teamcity.ida.avast.com/buildConfiguration/ThreatLabs_CustomerBackendSystems_cats_micrometer_Publish?branch=%3Cdefault%3E&buildTypeTab=overview&mode=builds)
-
-This project is an FP wrapper over Micrometer library, adjusted to the needs of CBS team but available to anyone.  
-It's currently released only for Scala 2.13.
+This project is an FP wrapper over Micrometer library available to anyone.  
+It's currently released only for Scala 2.13 and Cats-Effect 2.
 
 ## Usage
 
@@ -78,23 +76,9 @@ you'd like to do in your application setup) and then you can turn the initializa
   CATS_MICROMETER_INIT=true
   ```
 
-In case of BUTT-deployed app, your `runner.yaml` could look like this then:
+## App setup with StatsD
 
-```yaml
----
-name: ff_app
-class: ...
-jvm:
-  - "-Dconfig.file=config/application.conf"
-  - "-Dio.netty.leakDetection.level=advanced"
-  - "-XX:OnOutOfMemoryError=kill -9 %p "
-env: "CATS_MICROMETER_INIT=true"
-  ...
-```
-
-## App setup with Avast StatsD
-
-In case you use SST stack (means `MonixServerApp`, Micrometer+StatsD+Pureconfig
+In case you use [SST](https://avast.github.io/scala-server-toolkit/subprojects/micrometer) stack (means `MonixServerApp`, Micrometer+StatsD+Pureconfig
 bundle, [http4s server module](https://avast.github.io/scala-server-toolkit/subprojects/http4s), ...), you'll have a similar code in your
 app setup:
 
@@ -138,34 +122,25 @@ final case class AppConfiguration(
 
 ...and in your `reference.conf`:
 
-- BUTT deployed app:
-  ```hocon
-  statsd {
-    host = "localhost"
-    prefix = "app_name." // may be ff_* for older apps ;-)
-  }
-  ```
-- LUFT deployed app:
-  See [CML (section "Foreign host metrics")](https://cml.avast.com/pages/viewpage.action?pageId=19797802).
-  ```hocon
-  statsd {
-    host = "statsd.prg5.ff.avast.com"
-    port = 8126
-    prefix = "test.app_name." // or prod!
-  }
-  ```
+```hocon
+statsd {
+  host = "statsd.example.com"
+  port = 8126
+  prefix = "test.app_name." // or prod!
+}
+```
 
 Few things worth explicit mentioning:
 
 - `namingConvention = Some(NamingConvention.dot)` - without it, a camelCase conversion is applied to the metrics - you don't want that
-- `prefix = "app_name."` - as [described on CML](https://cml.avast.com/pages/viewpage.action?pageId=19797802), mind the dot at the end!
+- `prefix = "app_name."` - mind the dot at the end when using statsD!
 
 ## Avast Metrics interoperability
 
 There exists a module for easy cooperation with some legacy libraries which use [`Avast Metrics`](https://github.com/avast/metrics/).
 
 ```scala
-libraryDependencies += "com.avast.cbs" %% "cats-micrometer-avast-metrics" % "latestVersion"
+libraryDependencies += "com.avast" %% "cats-micrometer-avast-metrics" % "latestVersion"
 ```
 
 Simply use:
