@@ -1,7 +1,7 @@
 # Cats Micrometer ![Build](https://github.com/avast/cats-micrometer/actions/workflows/build.yml/badge.svg?branch=master)
 
 This project is an FP wrapper over Micrometer library available to anyone.  
-It's currently released only for Scala 2.13 and Cats-Effect 2.
+It's currently released only for Scala 2.13 and Scala 3 with Cats-Effect 2.
 
 ## Usage
 

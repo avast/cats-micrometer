@@ -92,15 +92,14 @@ class MicrometerToMonitorAdapter(val meterRegistry: MeterRegistry, prefixNames: 
     )
   }
 
-  override def newGauge[T <: Matchable](name: String, gauge: Supplier[T]): Gauge[T] = new Gauge[T] with MicrometerMetric {
+  override def newGauge[T](name: String, gauge: Supplier[T]): Gauge[T] = new Gauge[T] with MicrometerMetric {
     val getName: String = makeName(name)
     val underlying: MMeter = MGauge.builder(getName, gauge, (g: Supplier[T]) => convert(g.get())).register(meterRegistry)
 
     override def getValue: T = gauge.get()
   }
 
-  override def newGauge[T <: Matchable](name: String, replaceExisting: Boolean, gauge: Supplier[T]): Gauge[T] = new Gauge[T]
-    with MicrometerMetric {
+  override def newGauge[T](name: String, replaceExisting: Boolean, gauge: Supplier[T]): Gauge[T] = new Gauge[T] with MicrometerMetric {
     val getName: String = makeName(name)
 
     private val builder = MGauge.builder(getName, gauge, (g: Supplier[T]) => convert(g.get()))
@@ -147,7 +146,8 @@ class MicrometerToMonitorAdapter(val meterRegistry: MeterRegistry, prefixNames: 
   }
 
   // adapted from Dropwizard Graphite reporter
-  private def convert[T <: Matchable](o: T): Double = {
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:Disable.Any"))
+  private def convert(o: Any): Double = {
     o match {
       case fl: Float           => fl.doubleValue
       case d: Double           => d

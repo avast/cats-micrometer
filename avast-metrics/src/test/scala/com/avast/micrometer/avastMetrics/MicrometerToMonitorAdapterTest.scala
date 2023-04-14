@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.config.{MeterFilter, NamingConvention}
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micrometer.core.instrument.util.HierarchicalNameMapper
 import io.micrometer.core.instrument.{Clock, Meter}
-import io.micrometer.statsd._
+import io.micrometer.statsd.*
 import org.scalatest.concurrent.Eventually
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

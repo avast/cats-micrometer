@@ -54,7 +54,7 @@ class TestCatsMeterRegistry[F[_]: Effect](clock: Clock = Clock.SYSTEM)
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf()"))
   def getHistogramSnapshot(name: String, distributionConfig: DistributionStatisticConfig, scale: Double, tags: Tag*): HistogramSnapshot = {
     val summ: DefaultDistributionSummary[F] =
-      this.summary(name, distributionConfig, scale, tags *).asInstanceOf[DefaultDistributionSummary[F]]
+      this.summary(name, distributionConfig, scale, tags*).asInstanceOf[DefaultDistributionSummary[F]]
     summ.underlying.takeSnapshot()
   }
 
