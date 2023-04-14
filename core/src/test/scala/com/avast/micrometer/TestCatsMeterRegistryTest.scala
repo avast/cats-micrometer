@@ -7,7 +7,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 class TestCatsMeterRegistryTest extends AnyFlatSpec with Matchers {
   it should "return counter count" in {
@@ -119,7 +119,7 @@ class TestCatsMeterRegistryTest extends AnyFlatSpec with Matchers {
 
     val config = DistributionStatisticConfig
       .builder()
-      .percentiles(percentiles: _*)
+      .percentiles(percentiles*)
       .percentilePrecision(digitsOfPrecision)
       .percentilesHistogram(true)
       .build()
