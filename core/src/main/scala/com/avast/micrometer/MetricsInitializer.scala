@@ -1,6 +1,6 @@
 package com.avast.micrometer
 
-import io.micrometer.core.instrument._
+import io.micrometer.core.instrument.*
 
 import java.util.concurrent.TimeUnit
 

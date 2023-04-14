@@ -5,7 +5,7 @@ object Dependencies {
   object Avast {
     private val version = "3.0.2"
     val metricsCore = "com.avast.metrics" % "metrics-core" % version
-    val metricsCatsEffect = "com.avast.metrics" %% "metrics-cats-effect-2" % version
+    val metricsCatsEffect = ("com.avast.metrics" %% "metrics-cats-effect-2" % version).cross(CrossVersion.for3Use2_13)
   }
 
   object Micrometer {
@@ -20,7 +20,7 @@ object Dependencies {
   }
 
   object Scalatest {
-    private val version = "3.2.7"
+    private val version = "3.2.15"
     val scalaTest = "org.scalatest" %% "scalatest" % version
   }
 

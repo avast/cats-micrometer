@@ -2,8 +2,8 @@ package com.avast.micrometer
 
 import cats.effect.Sync
 import com.avast.metrics.api.Monitor
-import com.avast.metrics.scalaapi.{Monitor => ScalaMonitor}
-import com.avast.metrics.scalaeffectapi.{Monitor => CatsEffectMonitor}
+import com.avast.metrics.scalaapi.Monitor as ScalaMonitor
+import com.avast.metrics.scalaeffectapi.Monitor as CatsEffectMonitor
 import com.avast.micrometer.api.CatsMeterRegistry
 
 package object avastMetrics {

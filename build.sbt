@@ -2,15 +2,22 @@ import BuildSupport.ScalaVersions._
 
 ThisBuild / versionScheme := Some("early-semver")
 
-ThisBuild / scalacOptions ++=
-  List(
-    // warnings
-    "-Wconf:msg=While parsing annotations in:silent"
-  )
+ThisBuild / scalacOptions ++= List(
+  // warnings
+  "-Wconf:msg=While parsing annotations in:silent"
+)
 
 lazy val settingsCommon = List(
   organization := "com.avast",
-  scalaVersion := scala213,
+  scalaVersion := scala3,
+  scalacOptions := {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => scalacOptions.value ++ Seq("-source:future")
+      case Some((2, _)) => scalacOptions.value ++ Seq("-Xsource:3")
+      case other        => scalacOptions.value
+    }
+  },
+  crossScalaVersions := supportedScalaVersions,
   licenses := List("MIT" -> url(s"https://github.com/avast/cats-micrometer/blob/${version.value}/LICENSE")),
   description := "Library for Micrometer written in Cats-Effect"
 )

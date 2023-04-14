@@ -1,11 +1,11 @@
 package com.avast.micrometer
 
 import cats.effect.{Bracket, Sync}
-import cats.syntax.all._
+import cats.syntax.all.*
 import com.avast.micrometer.api.Timer
-import io.micrometer.core.instrument.{Timer => Delegate}
+import io.micrometer.core.instrument.Timer as Delegate
 
-import java.time.{Duration => JavaDuration}
+import java.time.Duration as JavaDuration
 import java.util.concurrent.{Callable, TimeUnit}
 import scala.concurrent.duration.Duration
 

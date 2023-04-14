@@ -1,21 +1,21 @@
 package com.avast.micrometer.avastMetrics
 
 import com.avast.metrics.TimerPairImpl
-import com.avast.metrics.api._
+import com.avast.metrics.api.*
 import com.avast.metrics.core.TimerHelper
 import io.micrometer.core.instrument.{
-  Counter => MCounter,
-  DistributionSummary => MDistributionSummary,
-  Gauge => MGauge,
-  Meter => MMeter,
+  Counter as MCounter,
+  DistributionSummary as MDistributionSummary,
+  Gauge as MGauge,
+  Meter as MMeter,
   MeterRegistry,
-  Timer => MTimer
+  Timer as MTimer
 }
 import org.slf4j.LoggerFactory
 
 import java.math.{BigDecimal, BigInteger}
 import java.time.Duration
-import java.util.concurrent._
+import java.util.concurrent.*
 import java.util.function.Supplier
 
 class MicrometerToMonitorAdapter(val meterRegistry: MeterRegistry, prefixNames: Seq[String] = Nil) extends Monitor {
@@ -92,14 +92,15 @@ class MicrometerToMonitorAdapter(val meterRegistry: MeterRegistry, prefixNames: 
     )
   }
 
-  override def newGauge[T](name: String, gauge: Supplier[T]): Gauge[T] = new Gauge[T] with MicrometerMetric {
+  override def newGauge[T <: Matchable](name: String, gauge: Supplier[T]): Gauge[T] = new Gauge[T] with MicrometerMetric {
     val getName: String = makeName(name)
     val underlying: MMeter = MGauge.builder(getName, gauge, (g: Supplier[T]) => convert(g.get())).register(meterRegistry)
 
     override def getValue: T = gauge.get()
   }
 
-  override def newGauge[T](name: String, replaceExisting: Boolean, gauge: Supplier[T]): Gauge[T] = new Gauge[T] with MicrometerMetric {
+  override def newGauge[T <: Matchable](name: String, replaceExisting: Boolean, gauge: Supplier[T]): Gauge[T] = new Gauge[T]
+    with MicrometerMetric {
     val getName: String = makeName(name)
 
     private val builder = MGauge.builder(getName, gauge, (g: Supplier[T]) => convert(g.get()))
@@ -146,8 +147,7 @@ class MicrometerToMonitorAdapter(val meterRegistry: MeterRegistry, prefixNames: 
   }
 
   // adapted from Dropwizard Graphite reporter
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:Disable.Any"))
-  private def convert(o: Any): Double = {
+  private def convert[T <: Matchable](o: T): Double = {
     o match {
       case fl: Float           => fl.doubleValue
       case d: Double           => d

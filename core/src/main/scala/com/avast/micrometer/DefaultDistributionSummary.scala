@@ -2,7 +2,7 @@ package com.avast.micrometer
 
 import cats.effect.Sync
 import com.avast.micrometer.api.DistributionSummary
-import io.micrometer.core.instrument.{DistributionSummary => Delegate}
+import io.micrometer.core.instrument.DistributionSummary as Delegate
 
 private[micrometer] class DefaultDistributionSummary[F[_]: Sync](delegate: Delegate) extends DistributionSummary[F] {
 

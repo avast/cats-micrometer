@@ -1,12 +1,12 @@
 package com.avast.micrometer
 
 import cats.effect.{Bracket, ExitCase, Sync}
-import cats.syntax.all._
+import cats.syntax.all.*
 import com.avast.micrometer.api.{Timer, TimerPair}
 
-import java.time.{Duration => JavaDuration}
+import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.util.control.NonFatal
 
 private[micrometer] class DefaultTimerPair[F[_]: Sync](successes: Timer[F], failures: Timer[F], clock: F[Long]) extends TimerPair[F] {

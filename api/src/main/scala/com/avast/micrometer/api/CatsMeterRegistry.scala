@@ -1,7 +1,7 @@
 package com.avast.micrometer.api
 
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
-import io.micrometer.core.instrument.{MeterRegistry => JavaMeterRegistry}
+import io.micrometer.core.instrument.MeterRegistry as JavaMeterRegistry
 
 import scala.concurrent.duration.FiniteDuration
 

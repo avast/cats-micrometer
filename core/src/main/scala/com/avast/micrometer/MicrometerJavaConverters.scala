@@ -1,11 +1,11 @@
 package com.avast.micrometer
 
 import com.avast.micrometer.api.Tag
-import io.micrometer.core.instrument.{Tag => JavaTag}
+import io.micrometer.core.instrument.Tag as JavaTag
 
-import java.lang.{Iterable => JavaIterable}
+import java.lang.Iterable as JavaIterable
 import java.util
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 private[micrometer] object MicrometerJavaConverters {
   implicit class ScalaTagsConverter(private val tags: Iterable[Tag]) extends AnyVal {

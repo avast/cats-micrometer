@@ -1,6 +1,6 @@
 package com.avast.micrometer.api
 
-import java.time.{Duration => JavaDuration}
+import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 

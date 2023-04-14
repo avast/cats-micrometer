@@ -2,22 +2,22 @@ package com.avast.micrometer
 
 import cats.effect.{Blocker, ContextShift, Effect, IO}
 import com.avast.micrometer.DefaultCatsMeterRegistry.{CollectionSizeToDouble, InitPropertyName}
-import com.avast.micrometer.MicrometerJavaConverters._
-import com.avast.micrometer.api._
+import com.avast.micrometer.MicrometerJavaConverters.*
+import com.avast.micrometer.api.*
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.{
-  Counter => _,
-  DistributionSummary => JavaSummary,
-  Gauge => JavaGauge,
-  MeterRegistry => JavaMeterRegistry,
-  Tag => _,
-  Timer => JavaTimer
+  Counter as _,
+  DistributionSummary as JavaSummary,
+  Gauge as JavaGauge,
+  MeterRegistry as JavaMeterRegistry,
+  Tag as _,
+  Timer as JavaTimer
 }
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.CollectionHasAsScala
-import scala.jdk.DurationConverters._
+import scala.jdk.DurationConverters.*
 
 private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     delegate: JavaMeterRegistry,
@@ -54,8 +54,9 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
     )
   }
 
-  override def gaugeCollectionSize[A <: Iterable[_]](name: String, tags: Tag*)(collection: A): Gauge[F] = {
-    gauge(name, tags: _*)(F.pure(collection))(CollectionSizeToDouble)
+  override def gaugeCollectionSize[A <: Iterable[?]](name: String, tags: Tag*)(collection: A): Gauge[F] = {
+    implicit val toDouble: ToDouble[A] = CollectionSizeToDouble
+    gauge(name, tags*)(F.pure(collection))
   }
 
   override def timer(name: String, tags: Tag*): Timer[F] = {
@@ -75,7 +76,7 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
         .builder(name)
         .tags(tags.asJavaTags)
         .publishPercentileHistogram()
-        .serviceLevelObjectives(serviceLevelObjectives.map(_.toJava): _*)
+        .serviceLevelObjectives(serviceLevelObjectives.map(_.toJava)*)
         .register(delegate),
       clock
     )
@@ -96,8 +97,8 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
 
   override def timerPair(name: String, tags: Tag*): TimerPair[F] = {
     new DefaultTimerPair(
-      timer(name, Seq(Tag("type", "success")) ++ tags: _*),
-      timer(name, Seq(Tag("type", "failure")) ++ tags: _*),
+      timer(name, (Seq(Tag("type", "success")) ++ tags)*),
+      timer(name, (Seq(Tag("type", "failure")) ++ tags)*),
       clock
     )
   }
@@ -109,16 +110,16 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
       tags: Tag*
   ): TimerPair[F] = {
     new DefaultTimerPair(
-      timer(name, minimumExpectedValue, maximumExpectedValue, Seq(Tag("type", "success")) ++ tags: _*),
-      timer(name, minimumExpectedValue, maximumExpectedValue, Seq(Tag("type", "failure")) ++ tags: _*),
+      timer(name, minimumExpectedValue, maximumExpectedValue, (Seq(Tag("type", "success")) ++ tags)*),
+      timer(name, minimumExpectedValue, maximumExpectedValue, (Seq(Tag("type", "failure")) ++ tags)*),
       clock
     )
   }
 
   override def timerPair(name: String, serviceLevelObjectives: Seq[FiniteDuration], tags: Tag*): TimerPair[F] = {
     new DefaultTimerPair(
-      timer(name, serviceLevelObjectives, Seq(Tag("type", "success")) ++ tags: _*),
-      timer(name, serviceLevelObjectives, Seq(Tag("type", "failure")) ++ tags: _*),
+      timer(name, serviceLevelObjectives, (Seq(Tag("type", "success")) ++ tags)*),
+      timer(name, serviceLevelObjectives, (Seq(Tag("type", "failure")) ++ tags)*),
       clock
     )
   }
@@ -142,7 +143,7 @@ private[micrometer] class DefaultCatsMeterRegistry[F[_]: Effect](
         .minimumExpectedValue(conf.getMinimumExpectedValueAsDouble)
         .maximumExpectedValue(conf.getMaximumExpectedValueAsDouble)
         .percentilePrecision(conf.getPercentilePrecision)
-        .publishPercentiles(conf.getPercentiles: _*)
+        .publishPercentiles(conf.getPercentiles*)
         .publishPercentileHistogram(conf.isPublishingHistogram)
         .distributionStatisticBufferLength(conf.getBufferLength)
         .distributionStatisticExpiry(conf.getExpiry)
@@ -179,8 +180,8 @@ private object DefaultCatsMeterRegistry {
 
   final val InitPropertyName: String = "CATS_MICROMETER_INIT"
 
-  private object CollectionSizeToDouble extends ToDouble[Iterable[_]] {
-    override def toDouble(value: Iterable[_]): Double = value.size.toDouble
+  private object CollectionSizeToDouble extends ToDouble[Iterable[?]] {
+    override def toDouble(value: Iterable[?]): Double = value.size.toDouble
   }
 
 }

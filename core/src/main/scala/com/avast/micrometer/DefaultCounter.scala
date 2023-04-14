@@ -2,7 +2,7 @@ package com.avast.micrometer
 
 import cats.effect.Sync
 import com.avast.micrometer.api.Counter
-import io.micrometer.core.instrument.{Counter => Delegate}
+import io.micrometer.core.instrument.Counter as Delegate
 
 private[micrometer] class DefaultCounter[F[_]: Sync](delegate: Delegate) extends Counter[F] {
 

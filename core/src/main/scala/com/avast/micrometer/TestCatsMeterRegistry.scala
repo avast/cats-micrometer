@@ -1,7 +1,7 @@
 package com.avast.micrometer
 
 import cats.effect.{Blocker, Effect}
-import com.avast.micrometer.MicrometerJavaConverters._
+import com.avast.micrometer.MicrometerJavaConverters.*
 import com.avast.micrometer.api.Tag
 import io.micrometer.core.instrument.Clock
 import io.micrometer.core.instrument.distribution.{DistributionStatisticConfig, HistogramSnapshot}
@@ -9,7 +9,7 @@ import io.micrometer.core.instrument.simple.{SimpleConfig, SimpleMeterRegistry}
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 class TestCatsMeterRegistry[F[_]: Effect](clock: Clock = Clock.SYSTEM)
     extends DefaultCatsMeterRegistry[F](
@@ -54,7 +54,7 @@ class TestCatsMeterRegistry[F[_]: Effect](clock: Clock = Clock.SYSTEM)
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf()"))
   def getHistogramSnapshot(name: String, distributionConfig: DistributionStatisticConfig, scale: Double, tags: Tag*): HistogramSnapshot = {
     val summ: DefaultDistributionSummary[F] =
-      this.summary(name, distributionConfig, scale, tags: _*).asInstanceOf[DefaultDistributionSummary[F]]
+      this.summary(name, distributionConfig, scale, tags *).asInstanceOf[DefaultDistributionSummary[F]]
     summ.underlying.takeSnapshot()
   }
 
