@@ -53,7 +53,7 @@ class MicrometerToMonitorAdapterTest extends AnyFlatSpec with Matchers with Even
     val received = mutable.Buffer.empty[String]
 
     val monitor = newMonitor() { line =>
-      println(s"Received: $line")
+      // println(s"Received: $line")
       received += line
     }
 
@@ -79,7 +79,7 @@ class MicrometerToMonitorAdapterTest extends AnyFlatSpec with Matchers with Even
     val received = mutable.Buffer.empty[String]
 
     val monitor = newMonitor() { line =>
-      println(s"Received: $line")
+      // println(s"Received: $line")
       received += line
     }
 
@@ -105,7 +105,7 @@ class MicrometerToMonitorAdapterTest extends AnyFlatSpec with Matchers with Even
     val received = mutable.Buffer.empty[String]
 
     val monitor = newMonitor() { line =>
-      println(s"Received: $line")
+      // println(s"Received: $line")
       received += line
     }
 
@@ -129,7 +129,7 @@ class MicrometerToMonitorAdapterTest extends AnyFlatSpec with Matchers with Even
     val received = mutable.Buffer.empty[String]
 
     val monitor = newMonitor() { line =>
-      println(s"Received: $line")
+      // println(s"Received: $line")
       received += line
     }
 
@@ -153,7 +153,7 @@ class MicrometerToMonitorAdapterTest extends AnyFlatSpec with Matchers with Even
     val received = mutable.Buffer.empty[String]
 
     val monitor = newMonitor() { line =>
-      println(s"Received: $line")
+      // println(s"Received: $line")
       received += line
     }
 
@@ -175,7 +175,7 @@ class MicrometerToMonitorAdapterTest extends AnyFlatSpec with Matchers with Even
     val received = mutable.Buffer.empty[String]
 
     val monitor = newMonitor() { line =>
-      println(s"Received: $line")
+      // println(s"Received: $line")
       received += line
     }
 
@@ -194,7 +194,7 @@ class MicrometerToMonitorAdapterTest extends AnyFlatSpec with Matchers with Even
     val received = mutable.Buffer.empty[String]
 
     val monitor = newMonitor() { line =>
-      println(s"Received: $line")
+      // println(s"Received: $line")
       received += line
     }
 
